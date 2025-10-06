@@ -47,6 +47,7 @@ const codingFacts = [
 export default function LeaderboardPage() {
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>("individuals")
   const [query, setQuery] = useState("")
+  const [isTabsMenuOpen, setIsTabsMenuOpen] = useState(false)
   const { playSound } = useMarioSoundEffect()
 
   useEffect(() => {
@@ -69,34 +70,14 @@ export default function LeaderboardPage() {
         </p>
       </header>
 
-      <div className="flex items-center justify-between gap-3">
-        <div role="tablist" aria-label="Leaderboard tabs" className="flex items-center gap-2">
-        {tabs.map((t) => {
-          const active = tab === t.key
-          return (
-            <button
-              key={t.key}
-              role="tab"
-              aria-selected={active}
-              onClick={() => setTab(t.key)}
-              className={cn(
-                "rounded-md px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:text-foreground",
-              )}
-            >
-              {t.label}
-            </button>
-          )
-        })}
-        </div>
-
-        {/* Search */}
-        <div className="relative">
+      <div className="flex flex-col gap-3 md:gap-4">
+        {/* Search on top */}
+        <div className="relative w-full md:w-auto">
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search name or team..."
-            className="h-9 w-56 md:w-72 rounded-md border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+            className="h-9 w-full md:w-72 rounded-md border border-border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
             aria-label="Search leaderboard"
           />
           <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground">
@@ -104,7 +85,94 @@ export default function LeaderboardPage() {
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"/></svg>
           </span>
         </div>
+
+        {/* Tabs: hamburger on mobile, inline on desktop */}
+        <div className="flex items-center justify-between md:justify-start">
+          <div className="hidden md:flex" role="tablist" aria-label="Leaderboard tabs">
+            <div className="flex items-center gap-2">
+              {tabs.map((t) => {
+                const active = tab === t.key
+                return (
+                  <button
+                    key={t.key}
+                    role="tab"
+                    aria-selected={active}
+                    onClick={() => setTab(t.key)}
+                    className={cn(
+                      "rounded-md px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    {t.label}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+          <div className="md:hidden w-full">
+            <button
+              onClick={() => setIsTabsMenuOpen(true)}
+              className="inline-flex w-full items-center justify-between rounded-md border border-border bg-card px-3 py-2 text-sm"
+              aria-label="Open sections menu"
+            >
+              <span>{tabs.find((t) => t.key === tab)?.label ?? "Sections"}</span>
+              <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+          </div>
+        </div>
       </div>
+
+      {/* Mobile tabs bottom sheet */}
+      <AnimatePresence>
+        {isTabsMenuOpen && (
+          <>
+            <motion.button
+              aria-label="Close sections backdrop"
+              onClick={() => setIsTabsMenuOpen(false)}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="fixed inset-0 z-40 bg-black/40 md:hidden"
+            />
+            <motion.div
+              role="dialog"
+              aria-modal="true"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{ type: "spring", stiffness: 260, damping: 26 }}
+              className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl border border-border bg-card p-4 shadow-lg md:hidden"
+            >
+              <div className="mx-auto max-w-6xl">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-medium">Sections</span>
+                  <button onClick={() => setIsTabsMenuOpen(false)} className="rounded-md p-2 hover:bg-background/60" aria-label="Close">
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 gap-2">
+                  {tabs.map((t) => {
+                    const active = tab === t.key
+                    return (
+                      <button
+                        key={t.key}
+                        onClick={() => { setTab(t.key); setIsTabsMenuOpen(false) }}
+                        className={cn(
+                          "w-full rounded-md border border-border px-3 py-2 text-sm text-left",
+                          active ? "bg-primary text-primary-foreground" : "bg-card hover:bg-background/60"
+                        )}
+                      >
+                        {t.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
       <div className="relative mt-6">
         <AnimatePresence mode="wait">
