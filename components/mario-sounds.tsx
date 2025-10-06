@@ -101,7 +101,7 @@ export function useMarioSounds() {
 
 // Hook for playing specific Mario sounds
 export function useMarioSoundEffect() {
-  const playSound = (type: 'coin' | 'jump' | 'powerup' | 'pipe' | 'button') => {
+  const playSound = (type: 'coin' | 'jump' | 'powerup' | 'pipe' | 'button' | 'lottery') => {
     const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
     
     const createTone = (frequency: number, duration: number, type: OscillatorType = 'square') => {
@@ -145,6 +145,14 @@ export function useMarioSoundEffect() {
         
       case 'button':
         createTone(600, 0.1, 'square')
+        break
+      case 'lottery':
+        // Lottery ticket jingle: quick bright arpeggio
+        createTone(700, 0.08, 'square')
+        setTimeout(() => createTone(850, 0.08, 'square'), 60)
+        setTimeout(() => createTone(1000, 0.08, 'square'), 120)
+        setTimeout(() => createTone(1200, 0.08, 'square'), 180)
+        setTimeout(() => createTone(1450, 0.12, 'square'), 260)
         break
     }
   }
