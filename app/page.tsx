@@ -6,6 +6,7 @@ import { useEffect } from "react"
 
 export default function HomePage() {
   const { scrollYProgress } = useScroll()
+
   useEffect(() => {
     const c = document.getElementById("snap-container")
     if (c) c.scrollTo({ top: 0 })
@@ -17,7 +18,7 @@ export default function HomePage() {
       <HeroLogo />
       
       {/* Project-Centric Learning Cycle - Mario Level 1 */}
-      <section className="relative flex h-[calc(100dvh-64px)] items-center justify-center overflow-hidden bg-background snap-start">
+      <section data-section="1" className="relative flex h-[calc(100dvh-64px)] items-center justify-center overflow-hidden bg-background snap-start">
         {/* Mario-style clouds */}
         <div className="absolute inset-0">
           <motion.div
@@ -80,10 +81,11 @@ export default function HomePage() {
             Every 3–4 months, teams of four students pick a domain — AI & Data Science, Robotics & Automation, Web/App Development, Mechatronics, Research & Innovation, or Entrepreneurship — and build a real-world project from scratch.
           </motion.p>
         </div>
+
       </section>
 
       {/* Mentorship - Mario Level 2 */}
-      <section className="relative flex h-[calc(100dvh-64px)] items-center justify-center overflow-hidden bg-background snap-start">
+      <section data-section="2" className="relative flex h-[calc(100dvh-64px)] items-center justify-center overflow-hidden bg-background snap-start">
         {/* Floating coins */}
         <div className="absolute inset-0">
           <motion.div
@@ -175,10 +177,11 @@ export default function HomePage() {
             BuildIt connects students with mentors who have real-world experience — including those placed in Google Summer of Code (GSoC), JPMC (J.P. Morgan Chase), and other reputed tech organizations.
           </motion.p>
           </div>
+
       </section>
 
       {/* Integrated Digital Ecosystem - Mario Level 3 */}
-      <section className="relative flex h-[calc(100dvh-64px)] items-center justify-center overflow-hidden bg-background snap-start">
+      <section data-section="3" className="relative flex h-[calc(100dvh-64px)] items-center justify-center overflow-hidden bg-background snap-start">
         {/* Moving pipes/platforms */}
         <div className="absolute inset-0">
           <motion.div
@@ -318,7 +321,24 @@ export default function HomePage() {
           >
             The BuildIt web platform serves as the central hub for all operations and engagement.
           </motion.p>
+
+          {/* Know More Button */}
+          <motion.button
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => {
+              window.location.href = '/build-cycle'
+            }}
+            className="mt-8 px-6 py-3 bg-white/20 backdrop-blur-md border border-white/30 text-white rounded-lg font-semibold hover:bg-white/30 transition-colors shadow-lg"
+            style={{ color: '#ffffff' }}
+          >
+            Know More About the Project Cycle
+          </motion.button>
         </div>
+
       </section>
       </div>
     </>

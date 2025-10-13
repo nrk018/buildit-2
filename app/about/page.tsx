@@ -274,8 +274,8 @@ function TeamTabs() {
                 key={g}
                 onClick={() => setActive(g)}
                 className={cn(
-                  "px-3 py-1 text-sm rounded-full",
-                  active === g ? "bg-primary text-primary-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                  "px-3 py-1 text-sm rounded-full transition-all",
+                  active === g ? "bg-white/30 backdrop-blur-md border border-white/50 text-white shadow-lg" : "text-muted-foreground hover:text-foreground hover:bg-white/10"
                 )}
               >
                 {g}
@@ -591,14 +591,9 @@ function RotatingDomains() {
 function DomainCard({ title, focus, areas }: { title: string; focus: string; areas: string[] }) {
   return (
     <div className="rounded-xl border border-border/50 bg-card p-4 md:p-6">
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <h3 className="text-lg md:text-2xl font-semibold" style={{ fontFamily: "var(--font-space-grotesk)" }}>{title}</h3>
-          <p className="mt-1 md:mt-2 text-sm md:text-lg text-muted-foreground">{focus}</p>
-        </div>
-        <Link href="#" className="shrink-0 inline-flex items-center justify-center rounded-md bg-primary px-3 py-2 md:px-4 text-sm font-medium text-primary-foreground hover:opacity-90">
-          Check out
-        </Link>
+      <div>
+        <h3 className="text-lg md:text-2xl font-semibold" style={{ fontFamily: "var(--font-space-grotesk)" }}>{title}</h3>
+        <p className="mt-1 md:mt-2 text-sm md:text-lg text-muted-foreground">{focus}</p>
       </div>
       <div className="mt-3">
         <h4 className="text-sm md:text-base font-medium">Key Areas</h4>
@@ -623,8 +618,8 @@ function DomainTabs() {
             key={d.title}
             onClick={() => setActive(i)}
             className={cn(
-              "rounded-full px-3 py-1 text-sm border",
-              active === i ? "bg-primary text-primary-foreground border-transparent" : "bg-card text-muted-foreground border-border hover:text-foreground"
+              "rounded-full px-3 py-1 text-sm border transition-all",
+              active === i ? "bg-white/30 backdrop-blur-md border-white/50 text-white shadow-lg" : "bg-white/10 text-muted-foreground border-white/20 hover:text-foreground hover:bg-white/20"
             )}
           >
             {d.title}

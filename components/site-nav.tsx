@@ -1,6 +1,5 @@
 "use client"
 
-import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
@@ -13,7 +12,7 @@ const nav = [
   { href: "/about", label: "About" },
   { href: "/build-cycle", label: "Build Cycle" },
   { href: "/leaderboard", label: "Leaderboard" },
-  { href: "/contact", label: "Contact" },
+  { href: "/social", label: "Social" },
 ]
 
 export default function SiteNav() {
@@ -45,17 +44,7 @@ export default function SiteNav() {
         <nav className="mx-auto max-w-6xl">
           <div className="flex items-center justify-between gap-4 rounded-full border border-[color:var(--border)] bg-card/60 px-4 py-2 backdrop-blur supports-[backdrop-filter]:bg-card/50">
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <span className="inline-flex items-center gap-2">
-                <Image
-                  src="/images/builditlogo.png"
-                  alt="BuildIt logo"
-                  width={40}
-                  height={40}
-                  className="rounded-md"
-                  priority
-                />
-                <span className="font-semibold tracking-tight">BuildIt</span>
-              </span>
+              <span className="font-semibold tracking-tight text-white">BUILDIT | MUJ</span>
             </Link>
 
             {/* Desktop Navigation */}
@@ -82,9 +71,9 @@ export default function SiteNav() {
               })}
               <li className="ml-1 flex flex-shrink-0">
                 <Link
-                  href="/build-cycle"
-                  onClick={() => handleNavClick('/build-cycle')}
-                  className="inline-flex h-9 items-center rounded-full bg-[color:var(--brand-yellow)] px-3 text-sm font-medium text-black hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring whitespace-nowrap"
+                  href="/start-building"
+                  onClick={() => handleNavClick('/start-building')}
+                  className="inline-flex h-9 items-center rounded-full bg-black px-3 text-sm font-medium text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring whitespace-nowrap"
                 >
                   Start Building
                 </Link>
@@ -151,14 +140,7 @@ export default function SiteNav() {
                 {/* Drawer Header */}
                 <div className="flex items-center justify-between p-6 border-b border-[color:var(--border)]">
                   <div className="flex items-center gap-2">
-                    <Image
-                      src="/images/builditlogo.png"
-                      alt="BuildIt logo"
-                      width={32}
-                      height={32}
-                      className="rounded-md"
-                    />
-                    <span className="font-semibold tracking-tight">BuildIt</span>
+                    <span className="font-semibold tracking-tight text-white">BUILDIT | MUJ</span>
                   </div>
                   <button
                     onClick={closeMenu}
@@ -213,12 +195,12 @@ export default function SiteNav() {
                   className="p-6 border-t border-[color:var(--border)]"
                 >
                   <Link
-                    href="/build-cycle"
+                    href="/start-building"
                     onClick={() => {
-                      handleNavClick('/build-cycle')
+                      handleNavClick('/start-building')
                       closeMenu()
                     }}
-                    className="w-full inline-flex items-center justify-center rounded-lg bg-[color:var(--brand-yellow)] px-4 py-3 text-base font-medium text-black hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+                    className="w-full inline-flex items-center justify-center rounded-lg bg-black px-4 py-3 text-base font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
                   >
                     Start Building
                   </Link>

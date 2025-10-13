@@ -1,23 +1,24 @@
 @import "tailwindcss";
 /* removed: @import "tw-animate-css"; */
+/* Cache bust: Force white text - Updated 2024 - Navbar fix - Chrome override */
 
 @custom-variant dark (&:is(.dark *));
 
 :root {
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: #ffffff;
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: #ffffff;
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
+  --popover-foreground: #ffffff;
   --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
+  --secondary-foreground: #ffffff;
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  --muted-foreground: #ffffff;
   --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
@@ -30,11 +31,11 @@
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-foreground: #ffffff;
   --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-accent-foreground: #ffffff;
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   /* brand accent used across UI */
@@ -47,19 +48,19 @@
 
 .dark {
   --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+  --foreground: #ffffff;
   --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
+  --card-foreground: #ffffff;
   --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
+  --popover-foreground: #ffffff;
   --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  --secondary-foreground: #ffffff;
   --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
+  --muted-foreground: #ffffff;
   --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --accent-foreground: #ffffff;
   --destructive: oklch(0.396 0.141 25.723);
   --destructive-foreground: oklch(0.637 0.237 25.331);
   --border: oklch(0.269 0 0);
@@ -71,11 +72,11 @@
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
   --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-foreground: #ffffff;
   --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-accent-foreground: #ffffff;
   --sidebar-border: oklch(0.269 0 0);
   --sidebar-ring: oklch(0.439 0 0);
   --brand-yellow: oklch(0.78 0.17 95);
@@ -128,6 +129,98 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Force all text to be white across all browsers */
+  * {
+    color: #ffffff !important;
+  }
+  
+  /* Override any yellow/brand colors and primary colors */
+  .text-brand-yellow,
+  .text-primary,
+  .text-primary-foreground,
+  [style*="brand-yellow"],
+  [style*="yellow"],
+  [style*="primary"] {
+    color: #ffffff !important;
+  }
+  
+  /* Force all text elements to be white - except Start Building button */
+  h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, label {
+    color: #ffffff !important;
+  }
+  
+  /* Exception: Start Building button should be white text on black background */
+  .bg-black,
+  [class*="bg-black"],
+  a[href="/build-cycle"],
+  button[href="/build-cycle"] {
+    color: #ffffff !important;
+    background-color: #000000 !important;
+  }
+  
+  /* Specific navbar overrides for Chrome */
+  header,
+  nav,
+  .text-white,
+  [class*="text-white"],
+  .font-semibold,
+  .tracking-tight {
+    color: #ffffff !important;
+  }
+  
+  /* Navbar links and text */
+  header a,
+  header span,
+  nav a,
+  nav span {
+    color: #ffffff !important;
+  }
+  
+  /* Chrome-specific navbar fix */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    header *,
+    nav *,
+    .text-white,
+    [class*="text-white"] {
+      color: #ffffff !important;
+    }
+    
+    /* Chrome-specific: Force all text white except Start Building */
+    body * {
+      color: #ffffff !important;
+    }
+    
+    /* Exception for Start Building button in Chrome */
+    .bg-black,
+    a[href="/build-cycle"] {
+      color: #ffffff !important;
+      background-color: #000000 !important;
+    }
+  }
+  
+  /* Force navbar text white in all browsers */
+  .sticky.top-0.z-50 * {
+    color: #ffffff !important;
+  }
+  
+  /* Direct targeting of Start Building button */
+  .bg-black {
+    color: #ffffff !important;
+    background-color: #000000 !important;
+  }
+  
+  /* Force reload for Chrome */
+  @media screen and (-webkit-min-device-pixel-ratio: 0) {
+    * {
+      color: #ffffff !important;
+    }
+    .bg-black,
+    a[href="/build-cycle"] {
+      color: #ffffff !important;
+      background-color: #000000 !important;
+    }
   }
 
   /* pixelated water effect background using token colors */

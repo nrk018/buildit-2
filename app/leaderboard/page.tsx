@@ -99,8 +99,8 @@ export default function LeaderboardPage() {
                     aria-selected={active}
                     onClick={() => setTab(t.key)}
                     className={cn(
-                      "rounded-md px-3 py-2 text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
-                      active ? "bg-primary text-primary-foreground" : "bg-card text-muted-foreground hover:text-foreground",
+                      "rounded-md px-3 py-2 text-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                      active ? "bg-white/30 backdrop-blur-md border border-white/50 text-white shadow-lg" : "bg-white/10 text-muted-foreground hover:text-foreground hover:bg-white/20",
                     )}
                   >
                     {t.label}
@@ -159,8 +159,8 @@ export default function LeaderboardPage() {
                         key={t.key}
                         onClick={() => { setTab(t.key); setIsTabsMenuOpen(false) }}
                         className={cn(
-                          "w-full rounded-md border border-border px-3 py-2 text-sm text-left",
-                          active ? "bg-primary text-primary-foreground" : "bg-card hover:bg-background/60"
+                          "w-full rounded-md border border-border px-3 py-2 text-sm text-left transition-all",
+                          active ? "bg-white/30 backdrop-blur-md border-white/50 text-white shadow-lg" : "bg-white/10 hover:bg-white/20"
                         )}
                       >
                         {t.label}
