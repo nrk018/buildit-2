@@ -53,7 +53,7 @@ export default function LeaderboardPage() {
   // removed leaderboard mount sound
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="mx-auto max-w-6xl px-4 py-12 [content-visibility:auto] [contain-intrinsic-size:1px_800px]">
       <header className="mb-6">
         <h1
           className="text-balance text-3xl font-semibold md:text-4xl"
@@ -175,10 +175,10 @@ export default function LeaderboardPage() {
           {tab === "individuals" && (
             <motion.div
               key="individuals"
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <IndividualsTable query={query} />
             </motion.div>
@@ -186,10 +186,10 @@ export default function LeaderboardPage() {
           {tab === "teams" && (
             <motion.div
               key="teams"
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <TeamsTable query={query} />
             </motion.div>
@@ -197,10 +197,10 @@ export default function LeaderboardPage() {
           {tab === "domains" && (
             <motion.div
               key="domains"
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <DomainsTable />
             </motion.div>
@@ -208,10 +208,10 @@ export default function LeaderboardPage() {
           {tab === "less-ai" && (
             <motion.div
               key="less-ai"
-              initial={{ opacity: 0, x: 12 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -12 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
             >
               <LessAITable />
             </motion.div>

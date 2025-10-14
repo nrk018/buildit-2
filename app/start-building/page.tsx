@@ -32,13 +32,13 @@ export default function StartBuildingPage() {
         </motion.p>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start [content-visibility:auto] [contain-intrinsic-size:1px_500px]">
         {/* Instructions */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6"
+          className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md md:backdrop-blur-xl p-6"
         >
           <h2 className="text-2xl font-semibold">Instructions</h2>
           <ol className="mt-4 space-y-3 list-decimal pl-5 text-muted-foreground">
@@ -102,7 +102,7 @@ export default function StartBuildingPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.1, duration: 0.6 }}
-          className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6 flex flex-col items-center justify-center"
+          className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md md:backdrop-blur-xl p-6 flex flex-col items-center justify-center"
         >
           <h2 className="text-2xl font-semibold mb-4">Scan this QR</h2>
           <div className="relative w-full max-w-md aspect-square">
