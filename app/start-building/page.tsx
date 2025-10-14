@@ -12,7 +12,7 @@ export default function StartBuildingPage() {
   const hasPayment = paymentLink && paymentLink !== "#"
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12">
+    <div className="mx-auto max-w-7xl px-4 py-12 pb-24 md:pb-12">
       <header className="mb-12 text-center">
         <motion.h1
           initial={{ opacity: 0 }}
@@ -20,7 +20,7 @@ export default function StartBuildingPage() {
           transition={{ duration: 0.6 }}
           className="text-4xl md:text-5xl font-bold"
         >
-          Start Building
+          Register Now!
         </motion.h1>
         <motion.p
           initial={{ opacity: 0 }}
@@ -64,7 +64,7 @@ export default function StartBuildingPage() {
             </li>
           </ol>
 
-          <div className="mt-6 flex flex-wrap items-center gap-3">
+          <div className="mt-6 hidden md:flex flex-wrap items-center gap-3">
             <Link
               href={formLink}
               target="_blank"
@@ -119,6 +119,38 @@ export default function StartBuildingPage() {
             Use your camera or any QR scanner app to open the membership form.
           </p>
         </motion.div>
+      </div>
+
+      {/* Mobile fixed action bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-white/20 bg-card/80 backdrop-blur-md">
+        <div className="mx-auto max-w-7xl px-4 py-3 grid grid-cols-2 gap-3">
+          <Link
+            href={formLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center justify-center rounded-lg border border-white/30 bg-white/20 backdrop-blur-md px-4 py-3 text-sm font-medium text-white hover:bg-white/30 transition-colors shadow-lg"
+          >
+            Open Form
+          </Link>
+          {hasPayment ? (
+            <Link
+              href={paymentLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center rounded-lg border border-white/30 bg-white/20 backdrop-blur-md px-4 py-3 text-sm font-medium text-white hover:bg-white/30 transition-colors shadow-lg"
+            >
+              Pay ₹250
+            </Link>
+          ) : (
+            <button
+              disabled
+              className="inline-flex items-center justify-center rounded-lg border border-white/30 bg-white/10 backdrop-blur-md px-4 py-3 text-sm font-medium text-white/70 cursor-not-allowed"
+              title="Set NEXT_PUBLIC_RAZORPAY_LINK to enable the Razorpay button"
+            >
+              Razorpay N/A
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )

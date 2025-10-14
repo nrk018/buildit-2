@@ -6,7 +6,7 @@ import { Suspense } from "react"
 import "./globals.css"
 import SiteNav from "@/components/site-nav" // fix SiteNav import path to point to the actual component with default export
 import { TransitionProvider } from "@/components/transition-provider" // new
-import MarioSoundProvider from "@/components/mario-sound-provider"
+// sound provider removed
 
 const bitcount = localFont({
   src: "./fonts/BitcountPropSingleInk.ttf",
@@ -29,7 +29,6 @@ export default function RootLayout({
     <html lang="en" className={`${bitcount.variable} dark antialiased`}>
       <body className="min-h-dvh bg-background text-foreground font-sans">
         <TransitionProvider>
-          <MarioSoundProvider>
             <div className="relative flex min-h-dvh flex-col">
               <Suspense fallback={<div>Loading...</div>}>
                 <SiteNav />
@@ -39,7 +38,6 @@ export default function RootLayout({
                 <p className="px-4">© {new Date().getFullYear()} BuildIt — Manipal University Jaipur</p>
               </footer>
             </div>
-          </MarioSoundProvider>
         </TransitionProvider>
         <Analytics />
       </body>

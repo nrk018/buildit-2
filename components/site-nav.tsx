@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState } from "react"
-import { useMarioSoundEffect } from "./mario-sounds"
+// sound effects removed
 
 const nav = [
   { href: "/", label: "Home" },
@@ -18,25 +18,17 @@ const nav = [
 export default function SiteNav() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const { playSound } = useMarioSoundEffect()
+  // sounds removed
 
   const toggleMenu = () => {
-    playSound('jump')
     setIsOpen(!isOpen)
   }
   
   const closeMenu = () => {
-    playSound('button')
     setIsOpen(false)
   }
   
-  const handleNavClick = (href: string) => {
-    if (href === '/build-cycle') {
-      playSound('powerup') // Special sound for CTA button
-    } else {
-      playSound('jump') // Navigation sound
-    }
-  }
+  const handleNavClick = (_href: string) => {}
 
   return (
     <>
@@ -75,7 +67,7 @@ export default function SiteNav() {
                   onClick={() => handleNavClick('/start-building')}
                   className="inline-flex h-9 items-center rounded-full bg-black px-3 text-sm font-medium text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring whitespace-nowrap"
                 >
-                  Start Building
+                  Register Now!
                 </Link>
               </li>
             </ul>
@@ -153,6 +145,20 @@ export default function SiteNav() {
                   </button>
                 </div>
 
+                {/* Sticky CTA at top for quick access */}
+                <div className="sticky top-0 z-10 bg-card/95 backdrop-blur border-b border-[color:var(--border)] p-4">
+                  <Link
+                    href="/start-building"
+                    onClick={() => {
+                      handleNavClick('/start-building')
+                      closeMenu()
+                    }}
+                    className="w-full inline-flex items-center justify-center rounded-lg bg-black px-4 py-3 text-base font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
+                  >
+                    Register Now!
+                  </Link>
+                </div>
+
                 {/* Navigation Links */}
                 <nav className="flex-1 p-6">
                   <ul className="space-y-2">
@@ -187,24 +193,7 @@ export default function SiteNav() {
                   </ul>
                 </nav>
 
-                {/* CTA Button */}
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  className="p-6 border-t border-[color:var(--border)]"
-                >
-                  <Link
-                    href="/start-building"
-                    onClick={() => {
-                      handleNavClick('/start-building')
-                      closeMenu()
-                    }}
-                    className="w-full inline-flex items-center justify-center rounded-lg bg-black px-4 py-3 text-base font-medium text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-ring transition-colors"
-                  >
-                    Start Building
-                  </Link>
-                </motion.div>
+                {/* Removed bottom CTA to avoid scrolling for access */}
               </div>
             </motion.div>
           </>

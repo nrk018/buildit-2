@@ -4,7 +4,7 @@ import type React from "react"
 
 import useSWR from "swr"
 import { useState, useEffect } from "react"
-import { useMarioSoundEffect } from "@/components/mario-sounds"
+// sound effects removed
 import { fetcher } from "@/lib/fetcher"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
@@ -48,13 +48,9 @@ export default function LeaderboardPage() {
   const [tab, setTab] = useState<(typeof tabs)[number]["key"]>("individuals")
   const [query, setQuery] = useState("")
   const [isTabsMenuOpen, setIsTabsMenuOpen] = useState(false)
-  const { playSound } = useMarioSoundEffect()
+  // sounds removed
 
-  useEffect(() => {
-    // play a short "lottery" jingle when leaderboard mounts
-    playSound('lottery')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // removed leaderboard mount sound
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
