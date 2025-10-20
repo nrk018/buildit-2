@@ -6,7 +6,7 @@ import Link from "next/link"
 import { useState, useEffect } from "react"
 import { ChevronDown } from "lucide-react"
 
-// Typewriter effect component
+
 function TypewriterCommand() {
   const [currentText, setCurrentText] = useState("")
   const [currentIndex, setCurrentIndex] = useState(0)
