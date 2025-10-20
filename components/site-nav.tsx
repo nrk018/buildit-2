@@ -12,6 +12,7 @@ const nav = [
   { href: "/about", label: "About" },
   { href: "/build-cycle", label: "Build Cycle" },
   { href: "/leaderboard", label: "Leaderboard" },
+  { href: "/live-projects", label: "Live Projects" },
   { href: "/social", label: "Social" },
 ]
 
