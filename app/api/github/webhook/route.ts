@@ -2,11 +2,18 @@ import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import crypto from "crypto"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-const GITHUB_SECRET = process.env.GITHUB_WEBHOOK_SECRET!
+export const dynamic = "force-dynamic"
 
-const supabase = createClient(supabaseUrl, supabaseKey)
+const GITHUB_SECRET = process.env.GITHUB_WEBHOOK_SECRET || ""
+
+function getSupabase() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase env vars are missing")
+  }
+  return createClient(supabaseUrl, supabaseKey)
+}
 
 function verifySignature(payload: string, signature: string): boolean {
   if (!GITHUB_SECRET) {
@@ -121,6 +128,7 @@ async function createPendingScore(
   githubUrl: string
 ) {
   try {
+    const supabase = getSupabase()
     const { error } = await supabase
       .from("pending_scores")
       .insert({

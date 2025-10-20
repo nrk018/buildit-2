@@ -2,14 +2,19 @@ import { NextRequest, NextResponse } from "next/server"
 import { createClient } from "@supabase/supabase-js"
 import crypto from "crypto"
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
-
-const supabase = createClient(supabaseUrl, supabaseKey)
+function getSupabase() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Supabase env vars are missing")
+  }
+  return createClient(supabaseUrl, supabaseKey)
+}
 
 // GET - Fetch all teams
 export async function GET(request: NextRequest) {
   try {
+    const supabase = getSupabase()
     const { data: teams, error } = await supabase
       .from("teams")
       .select("id, team_name, is_active, created_at")
@@ -46,6 +51,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if team already exists
+    const supabase = getSupabase()
     const { data: existingTeam } = await supabase
       .from("teams")
       .select("team_name")
@@ -105,6 +111,7 @@ export async function PUT(request: NextRequest) {
       )
     }
 
+    const supabase = getSupabase()
     const { data: updatedTeam, error } = await supabase
       .from("teams")
       .update({ 
