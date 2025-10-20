@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 
@@ -15,7 +15,7 @@ interface TeamData {
   documentation: number
 }
 
-export default function TeamDashboard() {
+function TeamDashboardContent() {
   const [teamData, setTeamData] = useState<TeamData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
@@ -217,5 +217,22 @@ export default function TeamDashboard() {
         </motion.div>
       </div>
     </div>
+  )
+}
+
+export default function TeamDashboard() {
+  return (
+    <Suspense fallback={
+      <div className="mx-auto max-w-6xl px-4 py-12">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center">
+            <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <TeamDashboardContent />
+    </Suspense>
   )
 }
