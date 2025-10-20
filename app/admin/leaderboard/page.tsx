@@ -16,7 +16,7 @@ export default function AdminLeaderboardPage() {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "x-admin-key": process.env.NEXT_PUBLIC_DUMMY ?? "", // client cannot access ADMIN_KEY, ask user to proxy or paste in server
+          "x-admin-key": process.env.NEXT_PUBLIC_DUMMY ?? "", 
         },
         body: JSON.stringify(parsed),
       })

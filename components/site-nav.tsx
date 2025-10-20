@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState } from "react"
-// sound effects removed
+
 
 const nav = [
   { href: "/", label: "Home" },
@@ -19,7 +19,7 @@ const nav = [
 export default function SiteNav() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  // sounds removed
+
 
   const toggleMenu = () => {
     setIsOpen(!isOpen)
