@@ -209,6 +209,18 @@ export default function AdminDashboard() {
               <h3 className="text-xl font-semibold mb-2">Fix Realtime</h3>
               <p className="text-muted-foreground">Fix Supabase realtime errors and database issues</p>
             </motion.a>
+
+            <motion.a
+              href="/admin/debug-leaderboard"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7, duration: 0.6 }}
+              className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6 hover:bg-card/80 transition-colors group"
+            >
+              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🏆</div>
+              <h3 className="text-xl font-semibold mb-2">Debug Leaderboard</h3>
+              <p className="text-muted-foreground">Fix leaderboard table and approve score issues</p>
+            </motion.a>
       </div>
     </div>
   )

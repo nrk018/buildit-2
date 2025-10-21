@@ -55,6 +55,8 @@ export async function POST(request: NextRequest) {
     const newScore = (currentScore?.points || 0) + pendingScore.points
 
     // Update leaderboard_teams with new score
+    console.log(`Updating leaderboard for team: ${pendingScore.team_name} with score: ${newScore}`)
+    
     const { error: leaderboardError } = await supabase
       .from("leaderboard_teams")
       .upsert({
@@ -66,8 +68,18 @@ export async function POST(request: NextRequest) {
 
     if (leaderboardError) {
       console.error("Error updating leaderboard:", leaderboardError)
+      console.error("Leaderboard error details:", {
+        code: leaderboardError.code,
+        message: leaderboardError.message,
+        details: leaderboardError.details,
+        hint: leaderboardError.hint
+      })
       return NextResponse.json(
-        { error: "Failed to update leaderboard" },
+        { 
+          error: "Failed to update leaderboard",
+          details: leaderboardError.message,
+          code: leaderboardError.code
+        },
         { status: 500 }
       )
     }
