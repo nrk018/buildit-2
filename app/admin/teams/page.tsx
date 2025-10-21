@@ -37,8 +37,7 @@ export default function AdminTeamsPage() {
     teamName: "", 
     password: "", 
     repositoryName: "", 
-    repositoryUrl: "",
-    organization: ""
+    repositoryUrl: ""
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoadingRepos, setIsLoadingRepos] = useState(false)
@@ -52,6 +51,7 @@ export default function AdminTeamsPage() {
       if (Date.now() < sessionData.expires) {
         setIsAuthenticated(true)
         fetchTeams()
+        fetchRepositories() // Auto-load repositories
       } else {
         localStorage.removeItem("adminSession")
       }
@@ -80,6 +80,7 @@ export default function AdminTeamsPage() {
         }))
         setIsAuthenticated(true)
         fetchTeams()
+        fetchRepositories() // Auto-load repositories
       } else {
         setError(data.error || "Invalid admin password")
       }
@@ -107,12 +108,10 @@ export default function AdminTeamsPage() {
     }
   }
 
-  const fetchRepositories = async (organization: string) => {
-    if (!organization.trim()) return
-    
+  const fetchRepositories = async () => {
     setIsLoadingRepos(true)
     try {
-      const response = await fetch(`/api/admin/repositories?org=${encodeURIComponent(organization)}`)
+      const response = await fetch(`/api/admin/repositories`)
       const data = await response.json()
 
       if (response.ok) {
@@ -150,7 +149,7 @@ export default function AdminTeamsPage() {
 
       if (response.ok) {
         setTeams(prev => [...prev, data])
-        setNewTeam({ teamName: "", password: "", repositoryName: "", repositoryUrl: "", organization: "" })
+        setNewTeam({ teamName: "", password: "", repositoryName: "", repositoryUrl: "" })
         setShowAddForm(false)
         setError("")
       } else {
@@ -326,30 +325,18 @@ export default function AdminTeamsPage() {
             </div>
 
             <div>
-              <label htmlFor="organization" className="block text-sm font-medium mb-2">
-                GitHub Organization Name
+              <label className="block text-sm font-medium mb-2">
+                Available Repositories
               </label>
-              <div className="flex gap-2">
-                <input
-                  id="organization"
-                  type="text"
-                  value={newTeam.organization}
-                  onChange={(e) => setNewTeam(prev => ({ ...prev, organization: e.target.value }))}
-                  placeholder="e.g., microsoft, google, your-company"
-                  className="flex-1 rounded-lg border border-white/30 bg-white/10 backdrop-blur-md px-4 py-3 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
-                />
-                <button
-                  type="button"
-                  onClick={() => fetchRepositories(newTeam.organization)}
-                  disabled={!newTeam.organization.trim() || isLoadingRepos}
-                  className="px-4 py-3 rounded-lg border border-white/30 bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {isLoadingRepos ? "Loading..." : "Load Org Repos"}
-                </button>
-              </div>
-              <p className="mt-1 text-xs text-muted-foreground">
-                Enter the GitHub organization name (not personal username)
+              <p className="text-xs text-muted-foreground mb-3">
+                Repositories from BuildIt organization are automatically loaded
               </p>
+              {isLoadingRepos && (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  Loading repositories...
+                </div>
+              )}
             </div>
 
             {repositories.length > 0 && (

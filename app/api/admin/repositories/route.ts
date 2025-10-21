@@ -2,15 +2,8 @@ import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url)
-    const organization = searchParams.get("org")
-    
-    if (!organization) {
-      return NextResponse.json(
-        { error: "Organization parameter is required" },
-        { status: 400 }
-      )
-    }
+    // Use pre-configured BuildIt organization
+    const organization = process.env.BUILDIT_GITHUB_ORG || "buildit-muj"
 
     const githubToken = process.env.GITHUB_TOKEN
     if (!githubToken) {
@@ -20,7 +13,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Fetch repositories from GitHub organization
+    // Fetch repositories from pre-configured BuildIt organization
     const response = await fetch(
       `https://api.github.com/orgs/${organization}/repos?per_page=100&sort=updated`,
       {

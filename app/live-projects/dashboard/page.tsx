@@ -6,6 +6,8 @@ import { motion } from "framer-motion"
 
 interface TeamData {
   teamName: string
+  repositoryName: string
+  repositoryUrl: string
   score: number
   rank: number
   lastActivity: string
@@ -13,6 +15,12 @@ interface TeamData {
   pullRequests: number
   issues: number
   documentation: number
+  weeklyScores: Array<{
+    week_start: string
+    week_end: string
+    points: number
+    activities: number
+  }>
 }
 
 function TeamDashboardContent() {
@@ -124,6 +132,66 @@ function TeamDashboardContent() {
           </button>
         </div>
       </header>
+
+      {/* Repository Information */}
+      {teamData?.repositoryName && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.6 }}
+          className="mb-8 rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6"
+        >
+          <h2 className="text-xl font-semibold mb-4">Assigned Repository</h2>
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-medium">{teamData.repositoryName}</h3>
+              {teamData.repositoryUrl && (
+                <a 
+                  href={teamData.repositoryUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-blue-400 hover:underline"
+                >
+                  View Repository →
+                </a>
+              )}
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground">Your assigned repository</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Weekly Scores Chart */}
+      {teamData?.weeklyScores && teamData.weeklyScores.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.6 }}
+          className="mb-8 rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6"
+        >
+          <h2 className="text-xl font-semibold mb-4">Weekly Performance</h2>
+          <div className="space-y-4">
+            {teamData.weeklyScores.slice(0, 8).map((week, index) => (
+              <div key={index} className="flex items-center justify-between p-4 rounded-lg bg-white/5">
+                <div>
+                  <p className="font-medium">
+                    Week of {new Date(week.week_start).toLocaleDateString()}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {week.activities} activities
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold text-green-400">+{week.points}</p>
+                  <p className="text-sm text-muted-foreground">points</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <motion.div

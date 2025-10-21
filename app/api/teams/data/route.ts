@@ -26,8 +26,23 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get team's current score and rank from leaderboard_teams table
     const supabase = getSupabase()
+
+    // Get team's repository information
+    const { data: teamInfo, error: teamError } = await supabase
+      .from("teams")
+      .select("repository_name, repository_url")
+      .eq("team_name", teamName)
+      .single()
+
+    if (teamError || !teamInfo) {
+      return NextResponse.json(
+        { error: "Team not found" },
+        { status: 404 }
+      )
+    }
+
+    // Get team's current score and rank from leaderboard_teams table
     const { data: teamScore, error: scoreError } = await supabase
       .from("leaderboard_teams")
       .select("points, rank")
@@ -42,11 +57,25 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Get detailed activity breakdown
+    // Get weekly scores for their specific repository
+    const { data: weeklyScores, error: weeklyError } = await supabase
+      .from("weekly_scores")
+      .select("week_start, week_end, points, activities")
+      .eq("team_name", teamName)
+      .eq("repository_name", teamInfo.repository_name)
+      .order("week_start", { ascending: false })
+      .limit(12) // Last 12 weeks
+
+    if (weeklyError) {
+      console.error("Weekly scores error:", weeklyError)
+    }
+
+    // Get detailed activity breakdown for their repository
     const { data: activities, error: activitiesError } = await supabase
       .from("team_activities")
       .select("activity_type, count")
       .eq("team_name", teamName)
+      .eq("repository_name", teamInfo.repository_name)
 
     if (activitiesError) {
       console.error("Activities error:", activitiesError)
@@ -79,9 +108,12 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       teamName,
+      repositoryName: teamInfo.repository_name,
+      repositoryUrl: teamInfo.repository_url,
       score: teamScore?.points || 0,
       rank: teamScore?.rank || 0,
-      lastActivity: new Date().toISOString(), // You can add last_activity column later
+      lastActivity: new Date().toISOString(),
+      weeklyScores: weeklyScores || [],
       ...activityBreakdown,
     })
   } catch (error) {
