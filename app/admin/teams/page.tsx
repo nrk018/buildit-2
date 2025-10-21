@@ -432,12 +432,15 @@ export default function AdminTeamsPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1, duration: 0.6 }}
-                className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6"
+                className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6 hover:bg-card/80 transition-colors cursor-pointer group"
+                onClick={() => router.push(`/admin/teams/${team.id}`)}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-4 mb-3">
-                      <h3 className="font-semibold text-lg">{team.team_name}</h3>
+                      <h3 className="font-semibold text-lg group-hover:text-blue-400 transition-colors">
+                        {team.team_name}
+                      </h3>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                         team.is_active 
                           ? "bg-green-500/20 text-green-400" 
@@ -457,6 +460,7 @@ export default function AdminTeamsPage() {
                             target="_blank" 
                             rel="noopener noreferrer"
                             className="text-xs text-muted-foreground hover:text-blue-400 transition-colors"
+                            onClick={(e) => e.stopPropagation()}
                           >
                             {team.repository_url}
                           </a>
@@ -466,11 +470,17 @@ export default function AdminTeamsPage() {
                     <p className="text-sm text-muted-foreground">
                       Created: {new Date(team.created_at).toLocaleDateString()}
                     </p>
+                    <p className="text-xs text-muted-foreground mt-2 group-hover:text-blue-400 transition-colors">
+                      Click to view team details and pending scores →
+                    </p>
                   </div>
                   
                   <div className="flex gap-2 ml-4">
                     <button
-                      onClick={() => handleToggleTeamStatus(team.id, team.is_active)}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        handleToggleTeamStatus(team.id, team.is_active)
+                      }}
                       className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                         team.is_active
                           ? "bg-red-500/20 text-red-400 hover:bg-red-500/30"
@@ -499,7 +509,7 @@ export default function AdminTeamsPage() {
           href="/admin/pending-scores"
           className="rounded-lg border border-white/30 bg-white/10 backdrop-blur-md px-4 py-2 text-white hover:bg-white/20 transition-colors"
         >
-          View Pending Scores →
+          View All Pending Scores →
         </a>
       </div>
     </div>
