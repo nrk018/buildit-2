@@ -58,10 +58,32 @@ export async function POST(request: NextRequest) {
 
 async function handleGitHubEvent(event: string, data: any) {
   const teamName = data.repository?.name
+  const repositoryName = data.repository?.name
+  const organizationName = data.organization?.login
+  
+  console.log(`Processing event: ${event}`)
+  console.log(`Repository: ${repositoryName}`)
+  console.log(`Organization: ${organizationName}`)
+  
   if (!teamName) {
     console.log("No repository name found in webhook payload")
     return
   }
+
+  // Check if this repository belongs to a team in our database
+  const supabase = getSupabase()
+  const { data: team, error: teamError } = await supabase
+    .from("teams")
+    .select("team_name, repository_name")
+    .eq("repository_name", repositoryName)
+    .single()
+
+  if (teamError || !team) {
+    console.log(`No team found for repository: ${repositoryName}`)
+    return
+  }
+
+  console.log(`Found team: ${team.team_name} for repository: ${repositoryName}`)
 
   let points = 0
   let activityType = ""
@@ -120,7 +142,7 @@ async function handleGitHubEvent(event: string, data: any) {
   }
 
   if (points > 0) {
-    await createPendingScore(teamName, points, activityType, description, githubUrl)
+    await createPendingScore(team.team_name, points, activityType, description, githubUrl)
   }
 }
 
@@ -133,10 +155,19 @@ async function createPendingScore(
 ) {
   try {
     const supabase = getSupabase()
+    
+    // Get repository name from the team
+    const { data: teamData } = await supabase
+      .from("teams")
+      .select("repository_name")
+      .eq("team_name", teamName)
+      .single()
+    
     const { error } = await supabase
       .from("pending_scores")
       .insert({
         team_name: teamName,
+        repository_name: teamData?.repository_name || null,
         activity_type: activityType,
         points: points,
         description: description,
