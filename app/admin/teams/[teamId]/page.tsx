@@ -62,20 +62,23 @@ export default function TeamDetailsPage() {
         const currentTeam = teamsData.find((t: Team) => t.id === parseInt(teamId as string))
         if (currentTeam) {
           setTeam(currentTeam)
+          
+          // Fetch pending scores for this specific team
+          const scoresResponse = await fetch("/api/admin/pending-scores")
+          const scoresData = await scoresResponse.json()
+          
+          if (scoresResponse.ok) {
+            console.log("All pending scores:", scoresData)
+            console.log("Looking for team:", currentTeam.team_name)
+            const teamScores = scoresData.filter((score: PendingScore) => 
+              score.team_name === currentTeam.team_name
+            )
+            console.log("Filtered team scores:", teamScores)
+            setPendingScores(teamScores)
+          }
         } else {
           setError("Team not found")
         }
-      }
-
-      // Fetch pending scores for this team
-      const scoresResponse = await fetch("/api/admin/pending-scores")
-      const scoresData = await scoresResponse.json()
-      
-      if (scoresResponse.ok) {
-        const teamScores = scoresData.filter((score: PendingScore) => 
-          score.team_name === currentTeam?.team_name
-        )
-        setPendingScores(teamScores)
       }
     } catch (err) {
       setError("Connection error. Please try again.")
@@ -119,6 +122,21 @@ export default function TeamDetailsPage() {
       }
     } catch (err) {
       setError("Connection error. Please try again.")
+    }
+  }
+
+  const refreshData = async () => {
+    setIsLoading(true)
+    await fetchTeamDetails()
+  }
+
+  const testDatabase = async () => {
+    try {
+      const response = await fetch("/api/debug/schema")
+      const data = await response.json()
+      console.log("Database schema test:", data)
+    } catch (err) {
+      console.error("Database test error:", err)
     }
   }
 
@@ -261,18 +279,29 @@ export default function TeamDetailsPage() {
           <h2 className="text-xl font-semibold">
             Pending Scores ({pendingScores.length})
           </h2>
-          <button
-            onClick={fetchTeamDetails}
-            className="rounded-lg border border-white/30 bg-white/10 backdrop-blur-md px-4 py-2 text-white hover:bg-white/20 transition-colors"
-          >
-            Refresh
-          </button>
+          <div className="flex gap-2">
+            <button
+              onClick={refreshData}
+              className="rounded-lg border border-white/30 bg-white/10 backdrop-blur-md px-4 py-2 text-white hover:bg-white/20 transition-colors"
+            >
+              Refresh
+            </button>
+            <button
+              onClick={testDatabase}
+              className="rounded-lg border border-yellow-500/30 bg-yellow-500/10 backdrop-blur-md px-4 py-2 text-yellow-400 hover:bg-yellow-500/20 transition-colors"
+            >
+              Test DB
+            </button>
+          </div>
         </div>
 
         {pendingScores.length === 0 ? (
           <div className="text-center py-12">
             <div className="text-4xl mb-4">✅</div>
             <p className="text-muted-foreground">No pending scores for this team</p>
+            <p className="text-xs text-muted-foreground mt-2">
+              Team: {team?.team_name} | Check browser console for debugging info
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
