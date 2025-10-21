@@ -3,10 +3,14 @@ import { createClient } from "@supabase/supabase-js"
 import crypto from "crypto"
 
 function getSupabase() {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   if (!supabaseUrl || !supabaseKey) {
-    throw new Error("Supabase env vars are missing")
+    const missing = [
+      !supabaseUrl ? "NEXT_PUBLIC_SUPABASE_URL or SUPABASE_URL" : null,
+      !supabaseKey ? "SUPABASE_SERVICE_ROLE_KEY" : null,
+    ].filter(Boolean).join(", ")
+    throw new Error(`Supabase env vars are missing: ${missing}`)
   }
   return createClient(supabaseUrl, supabaseKey)
 }
@@ -17,7 +21,7 @@ export async function GET(request: NextRequest) {
     const supabase = getSupabase()
     const { data: teams, error } = await supabase
       .from("teams")
-      .select("id, team_name, is_active, created_at")
+      .select("id, team_name, repository_name, repository_url, is_active, created_at")
       .order("created_at", { ascending: false })
 
     if (error) {
@@ -41,11 +45,11 @@ export async function GET(request: NextRequest) {
 // POST - Create new team
 export async function POST(request: NextRequest) {
   try {
-    const { teamName, password } = await request.json()
+    const { teamName, password, repositoryName, repositoryUrl } = await request.json()
 
-    if (!teamName || !password) {
+    if (!teamName || !password || !repositoryName) {
       return NextResponse.json(
-        { error: "Team name and password are required" },
+        { error: "Team name, password, and repository are required" },
         { status: 400 }
       )
     }
@@ -74,9 +78,11 @@ export async function POST(request: NextRequest) {
       .insert({
         team_name: teamName,
         password_hash: passwordHash,
+        repository_name: repositoryName,
+        repository_url: repositoryUrl,
         is_active: true
       })
-      .select("id, team_name, is_active, created_at")
+      .select("id, team_name, repository_name, repository_url, is_active, created_at")
       .single()
 
     if (error) {
@@ -119,7 +125,7 @@ export async function PUT(request: NextRequest) {
         updated_at: new Date().toISOString()
       })
       .eq("id", teamId)
-      .select("id, team_name, is_active, created_at")
+      .select("id, team_name, repository_name, repository_url, is_active, created_at")
       .single()
 
     if (error) {

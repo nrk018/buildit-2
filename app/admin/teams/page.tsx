@@ -7,19 +7,41 @@ import { useRouter } from "next/navigation"
 interface Team {
   id: number
   team_name: string
+  repository_name?: string
+  repository_url?: string
   is_active: boolean
   created_at: string
 }
 
+interface Repository {
+  id: number
+  name: string
+  full_name: string
+  description: string
+  html_url: string
+  language: string
+  updated_at: string
+  private: boolean
+  fork: boolean
+}
+
 export default function AdminTeamsPage() {
   const [teams, setTeams] = useState<Team[]>([])
+  const [repositories, setRepositories] = useState<Repository[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [adminPassword, setAdminPassword] = useState("")
   const [showAddForm, setShowAddForm] = useState(false)
-  const [newTeam, setNewTeam] = useState({ teamName: "", password: "" })
+  const [newTeam, setNewTeam] = useState({ 
+    teamName: "", 
+    password: "", 
+    repositoryName: "", 
+    repositoryUrl: "",
+    organization: ""
+  })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isLoadingRepos, setIsLoadingRepos] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
@@ -85,6 +107,29 @@ export default function AdminTeamsPage() {
     }
   }
 
+  const fetchRepositories = async (organization: string) => {
+    if (!organization.trim()) return
+    
+    setIsLoadingRepos(true)
+    try {
+      const response = await fetch(`/api/admin/repositories?org=${encodeURIComponent(organization)}`)
+      const data = await response.json()
+
+      if (response.ok) {
+        setRepositories(data.repositories || [])
+        setError("")
+      } else {
+        setError(data.error || "Failed to load repositories")
+        setRepositories([])
+      }
+    } catch (err) {
+      setError("Connection error. Please try again.")
+      setRepositories([])
+    } finally {
+      setIsLoadingRepos(false)
+    }
+  }
+
   const handleAddTeam = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
@@ -95,7 +140,9 @@ export default function AdminTeamsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           teamName: newTeam.teamName,
-          password: newTeam.password
+          password: newTeam.password,
+          repositoryName: newTeam.repositoryName,
+          repositoryUrl: newTeam.repositoryUrl
         }),
       })
 
@@ -103,7 +150,7 @@ export default function AdminTeamsPage() {
 
       if (response.ok) {
         setTeams(prev => [...prev, data])
-        setNewTeam({ teamName: "", password: "" })
+        setNewTeam({ teamName: "", password: "", repositoryName: "", repositoryUrl: "", organization: "" })
         setShowAddForm(false)
         setError("")
       } else {
@@ -277,6 +324,74 @@ export default function AdminTeamsPage() {
                 />
               </div>
             </div>
+
+            <div>
+              <label htmlFor="organization" className="block text-sm font-medium mb-2">
+                GitHub Organization Name
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="organization"
+                  type="text"
+                  value={newTeam.organization}
+                  onChange={(e) => setNewTeam(prev => ({ ...prev, organization: e.target.value }))}
+                  placeholder="e.g., microsoft, google, your-company"
+                  className="flex-1 rounded-lg border border-white/30 bg-white/10 backdrop-blur-md px-4 py-3 text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/50"
+                />
+                <button
+                  type="button"
+                  onClick={() => fetchRepositories(newTeam.organization)}
+                  disabled={!newTeam.organization.trim() || isLoadingRepos}
+                  className="px-4 py-3 rounded-lg border border-white/30 bg-white/20 backdrop-blur-md text-white hover:bg-white/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoadingRepos ? "Loading..." : "Load Org Repos"}
+                </button>
+              </div>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Enter the GitHub organization name (not personal username)
+              </p>
+            </div>
+
+            {repositories.length > 0 && (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label htmlFor="repository" className="block text-sm font-medium">
+                    Select Repository
+                  </label>
+                  <span className="text-xs text-muted-foreground">
+                    {repositories.length} repositories found
+                  </span>
+                </div>
+                <select
+                  id="repository"
+                  value={newTeam.repositoryName}
+                  onChange={(e) => {
+                    const selectedRepo = repositories.find(repo => repo.name === e.target.value)
+                    setNewTeam(prev => ({ 
+                      ...prev, 
+                      repositoryName: e.target.value,
+                      repositoryUrl: selectedRepo?.html_url || ""
+                    }))
+                  }}
+                  className="w-full rounded-lg border border-white/30 bg-white/10 backdrop-blur-md px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-white/50"
+                  required
+                >
+                  <option value="">Select a repository...</option>
+                  {repositories.map((repo) => (
+                    <option key={repo.id} value={repo.name} className="bg-gray-800 text-white">
+                      {repo.name} {repo.description && `- ${repo.description}`}
+                    </option>
+                  ))}
+                </select>
+                {newTeam.repositoryUrl && (
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Repository: <a href={newTeam.repositoryUrl} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">
+                      {newTeam.repositoryUrl}
+                    </a>
+                  </p>
+                )}
+              </div>
+            )}
             <div className="flex gap-3">
               <button
                 type="submit"
@@ -344,6 +459,23 @@ export default function AdminTeamsPage() {
                         {team.is_active ? "Active" : "Inactive"}
                       </span>
                     </div>
+                    {team.repository_name && (
+                      <div className="mb-2">
+                        <p className="text-sm font-medium text-blue-400">
+                          Repository: {team.repository_name}
+                        </p>
+                        {team.repository_url && (
+                          <a 
+                            href={team.repository_url} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="text-xs text-muted-foreground hover:text-blue-400 transition-colors"
+                          >
+                            {team.repository_url}
+                          </a>
+                        )}
+                      </div>
+                    )}
                     <p className="text-sm text-muted-foreground">
                       Created: {new Date(team.created_at).toLocaleDateString()}
                     </p>
