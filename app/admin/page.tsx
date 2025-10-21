@@ -174,17 +174,29 @@ export default function AdminDashboard() {
           <p className="text-muted-foreground">Review and approve team activities and contributions</p>
         </motion.a>
 
-        <motion.a
-          href="/admin/leaderboard"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.6 }}
-          className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6 hover:bg-card/80 transition-colors group"
-        >
-          <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🏆</div>
-          <h3 className="text-xl font-semibold mb-2">Leaderboard</h3>
-          <p className="text-muted-foreground">View team rankings, scores, and performance metrics</p>
-        </motion.a>
+            <motion.a
+              href="/admin/leaderboard"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.6 }}
+              className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6 hover:bg-card/80 transition-colors group"
+            >
+              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🏆</div>
+              <h3 className="text-xl font-semibold mb-2">Leaderboard</h3>
+              <p className="text-muted-foreground">View team rankings, scores, and performance metrics</p>
+            </motion.a>
+
+            <motion.a
+              href="/admin/test-webhook"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5, duration: 0.6 }}
+              className="rounded-xl border border-border/50 bg-card/70 backdrop-blur-md p-6 hover:bg-card/80 transition-colors group"
+            >
+              <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">🔧</div>
+              <h3 className="text-xl font-semibold mb-2">Test Webhook</h3>
+              <p className="text-muted-foreground">Debug webhook integration and repository events</p>
+            </motion.a>
       </div>
     </div>
   )

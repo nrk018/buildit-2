@@ -73,59 +73,75 @@ export async function POST(request: NextRequest) {
     }
 
     // Update ranks for all teams after score change
-    const { error: rankError } = await supabase.rpc('update_team_ranks')
-    if (rankError) {
-      console.error("Error updating ranks:", rankError)
-      // Don't fail the request, just log the error
+    try {
+      const { error: rankError } = await supabase.rpc('update_team_ranks')
+      if (rankError) {
+        console.error("Error updating ranks:", rankError)
+        // Try manual rank update if function doesn't exist
+        await updateRanksManually(supabase)
+      }
+    } catch (err) {
+      console.error("RPC function not available, using manual rank update")
+      await updateRanksManually(supabase)
     }
 
     // Update team activities count
-    const { data: existingActivity, error: fetchActivityError } = await supabase
-      .from("team_activities")
-      .select("count")
-      .eq("team_name", pendingScore.team_name)
-      .eq("activity_type", pendingScore.activity_type)
-      .eq("repository_name", pendingScore.repository_name)
-      .single()
+    try {
+      const { data: existingActivity, error: fetchActivityError } = await supabase
+        .from("team_activities")
+        .select("count")
+        .eq("team_name", pendingScore.team_name)
+        .eq("activity_type", pendingScore.activity_type)
+        .eq("repository_name", pendingScore.repository_name || "")
 
-    const newCount = (existingActivity?.count || 0) + 1
+      const newCount = (existingActivity?.[0]?.count || 0) + 1
 
-    const { error: activityError } = await supabase
-      .from("team_activities")
-      .upsert({
-        team_name: pendingScore.team_name,
-        repository_name: pendingScore.repository_name,
-        activity_type: pendingScore.activity_type,
-        count: newCount,
-        last_updated: new Date().toISOString()
-      }, {
-        onConflict: "team_name,activity_type,repository_name",
-        ignoreDuplicates: false
-      })
+      const { error: activityError } = await supabase
+        .from("team_activities")
+        .upsert({
+          team_name: pendingScore.team_name,
+          repository_name: pendingScore.repository_name || "",
+          activity_type: pendingScore.activity_type,
+          count: newCount,
+          last_updated: new Date().toISOString()
+        }, {
+          onConflict: "team_name,activity_type,repository_name",
+          ignoreDuplicates: false
+        })
 
-    if (activityError) {
-      console.error("Error updating team activities:", activityError)
+      if (activityError) {
+        console.error("Error updating team activities:", activityError)
+        // Don't fail the request, just log the error
+      }
+    } catch (err) {
+      console.error("Team activities update failed:", err)
       // Don't fail the request, just log the error
     }
 
     // Create weekly score entry
-    const now = new Date()
-    const weekStart = new Date(now.setDate(now.getDate() - now.getDay())) // Start of current week
-    const weekEnd = new Date(weekStart)
-    weekEnd.setDate(weekEnd.getDate() + 6) // End of current week
+    try {
+      const now = new Date()
+      const weekStart = new Date(now.setDate(now.getDate() - now.getDay())) // Start of current week
+      const weekEnd = new Date(weekStart)
+      weekEnd.setDate(weekEnd.getDate() + 6) // End of current week
 
-    const { error: weeklyError } = await supabase.rpc('create_weekly_score', {
-      p_team_name: pendingScore.team_name,
-      p_repository_name: pendingScore.repository_name,
-      p_week_start: weekStart.toISOString().split('T')[0],
-      p_week_end: weekEnd.toISOString().split('T')[0],
-      p_points: pendingScore.points,
-      p_activities: 1
-    })
+      const { error: weeklyError } = await supabase.rpc('create_weekly_score', {
+        p_team_name: pendingScore.team_name,
+        p_repository_name: pendingScore.repository_name,
+        p_week_start: weekStart.toISOString().split('T')[0],
+        p_week_end: weekEnd.toISOString().split('T')[0],
+        p_points: pendingScore.points,
+        p_activities: 1
+      })
 
-    if (weeklyError) {
-      console.error("Error creating weekly score:", weeklyError)
-      // Don't fail the request, just log the error
+      if (weeklyError) {
+        console.error("Error creating weekly score:", weeklyError)
+        // Try manual weekly score creation if function doesn't exist
+        await createWeeklyScoreManually(supabase, pendingScore)
+      }
+    } catch (err) {
+      console.error("Weekly score RPC function not available, using manual creation")
+      await createWeeklyScoreManually(supabase, pendingScore)
     }
 
     // Mark pending score as approved
@@ -157,5 +173,68 @@ export async function POST(request: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     )
+  }
+}
+
+// Helper function to manually update ranks
+async function updateRanksManually(supabase: any) {
+  try {
+    // Get all teams ordered by points
+    const { data: teams, error } = await supabase
+      .from("leaderboard_teams")
+      .select("teamName, points")
+      .order("points", { ascending: false })
+
+    if (error) {
+      console.error("Error fetching teams for rank update:", error)
+      return
+    }
+
+    // Update ranks
+    for (let i = 0; i < teams.length; i++) {
+      const { error: updateError } = await supabase
+        .from("leaderboard_teams")
+        .update({ rank: i + 1 })
+        .eq("teamName", teams[i].teamName)
+
+      if (updateError) {
+        console.error(`Error updating rank for ${teams[i].teamName}:`, updateError)
+      }
+    }
+  } catch (err) {
+    console.error("Manual rank update failed:", err)
+  }
+}
+
+// Helper function to manually create weekly score
+async function createWeeklyScoreManually(supabase: any, pendingScore: any) {
+  try {
+    const now = new Date()
+    const weekStart = new Date(now.setDate(now.getDate() - now.getDay()))
+    const weekEnd = new Date(weekStart)
+    weekEnd.setDate(weekEnd.getDate() + 6)
+
+    // Check if weekly_scores table exists, if not skip
+    const { error: insertError } = await supabase
+      .from("weekly_scores")
+      .upsert({
+        team_name: pendingScore.team_name,
+        repository_name: pendingScore.repository_name,
+        week_start: weekStart.toISOString().split('T')[0],
+        week_end: weekEnd.toISOString().split('T')[0],
+        points: pendingScore.points,
+        activities: 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }, {
+        onConflict: "team_name,repository_name,week_start",
+        ignoreDuplicates: false
+      })
+
+    if (insertError) {
+      console.error("Error creating weekly score manually:", insertError)
+    }
+  } catch (err) {
+    console.error("Manual weekly score creation failed:", err)
   }
 }

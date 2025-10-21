@@ -64,6 +64,7 @@ async function handleGitHubEvent(event: string, data: any) {
   console.log(`Processing event: ${event}`)
   console.log(`Repository: ${repositoryName}`)
   console.log(`Organization: ${organizationName}`)
+  console.log(`Full payload repository:`, data.repository)
   
   if (!teamName) {
     console.log("No repository name found in webhook payload")
@@ -72,6 +73,14 @@ async function handleGitHubEvent(event: string, data: any) {
 
   // Check if this repository belongs to a team in our database
   const supabase = getSupabase()
+  
+  // First, let's see what teams exist in the database
+  const { data: allTeams, error: allTeamsError } = await supabase
+    .from("teams")
+    .select("team_name, repository_name")
+  
+  console.log("All teams in database:", allTeams)
+  
   const { data: team, error: teamError } = await supabase
     .from("teams")
     .select("team_name, repository_name")
@@ -80,6 +89,7 @@ async function handleGitHubEvent(event: string, data: any) {
 
   if (teamError || !team) {
     console.log(`No team found for repository: ${repositoryName}`)
+    console.log(`Team error:`, teamError)
     return
   }
 
